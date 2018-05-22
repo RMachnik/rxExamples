@@ -50,7 +50,7 @@ public class LazyDb {
     static Observable<List<RxFlatMap.User>> allUsersRx2(int startFrom) {
         return Observable
                 .fromCallable(() -> loadUsers(startFrom))
-                .concatWith(allUsersRx2(startFrom + PAGE_SIZE));
+                .concatWith(Observable.defer(() -> allUsersRx2(startFrom + PAGE_SIZE)));
     }
 
 
