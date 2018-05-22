@@ -33,6 +33,12 @@ public class LazyDb {
                 .take(2)
                 .takeLast(1)
                 .subscribe(users -> log.info("{}", users));
+
+        allUsersRx2(1)
+                .take(2)
+                .subscribe(users -> log.info("{}", users));
+
+
     }
 
     static Observable<List<RxFlatMap.User>> allUsers(int startFrom) {
@@ -40,6 +46,13 @@ public class LazyDb {
                 .defer(() -> Observable.fromArray(loadUsers(startFrom)))
                 .concatWith(Observable.defer(() -> allUsers(startFrom + PAGE_SIZE)));
     }
+
+    static Observable<List<RxFlatMap.User>> allUsersRx2(int startFrom) {
+        return Observable
+                .fromCallable(() -> loadUsers(startFrom))
+                .concatWith(allUsersRx2(startFrom + PAGE_SIZE));
+    }
+
 
     static List<RxFlatMap.User> loadUsers(int startFrom) {
         return DB.subList(startFrom, startFrom + PAGE_SIZE);
