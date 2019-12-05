@@ -1,27 +1,24 @@
+import com.google.common.util.concurrent.Uninterruptibles;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+@Slf4j
 public class RxExample {
 
     static Random random = new Random();
 
     static Person heavyLoad(UUID uuid) {
-        sleepUninteruptably(1);
+        Uninterruptibles.sleepUninterruptibly(1, SECONDS);
         if (random.nextInt(3) % 3 == 0)
             throw new RuntimeException("SomeException");
         return new Person(uuid);
-    }
-
-    static void sleepUninteruptably(int seconds) {
-        try {
-            TimeUnit.SECONDS.sleep(seconds);
-        } catch (InterruptedException e) {
-            System.out.println(Thread.currentThread().getName() + " ohhh... sleeping error");
-        }
     }
 
     static Flowable<Person> asyncLoad(UUID uuid) {
@@ -35,14 +32,18 @@ public class RxExample {
                 .take(10);
 
         Flowable<Person> personFlowable = source
-                .flatMap(uuid -> asyncLoad(uuid).onErrorReturn(throwable -> new Person(null)).subscribeOn(Schedulers.io()));
+                .flatMap(uuid -> asyncLoad(uuid)
+                        .onErrorReturn(throwable -> new Person(null))
+                        .subscribeOn(Schedulers.io())
+                );
 
         personFlowable
                 .map(p -> p.id)
                 .onErrorReturnItem("some error")
-                .subscribe(p -> System.out.println(Thread.currentThread().getName() + "  " + p));
+                .subscribe(p -> log.info(Thread.currentThread().getName() + "  " + p));
 
-        sleepUninteruptably(5);
+        Uninterruptibles.sleepUninterruptibly(5, SECONDS);
+
 
     }
 
@@ -50,7 +51,7 @@ public class RxExample {
         String id;
 
         public Person(UUID uuid) {
-            System.out.println(Thread.currentThread().getName() + " created " + uuid);
+            log.info(Thread.currentThread().getName() + " created " + uuid);
         }
     }
 }

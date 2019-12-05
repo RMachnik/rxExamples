@@ -10,9 +10,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RxFlatMap {
 
-    static Random random = new Random();
-
-
     public static void main(String[] args) throws InterruptedException {
 
         Observable.range(0, 100)
