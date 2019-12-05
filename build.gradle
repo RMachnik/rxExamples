@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 9
+sourceCompatibility = 12
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -11,11 +11,15 @@ repositories {
 }
 
 dependencies {
-    compile group: 'io.vavr', name: 'vavr', version: '0.9.2'
-    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.13'
+    compile group: 'io.vavr', name: 'vavr', version: '0.10.2'
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.15'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+    def lombokVersion = '1.18.10'
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
